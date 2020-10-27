@@ -1,10 +1,10 @@
 # 491A_Prototype
 
 to get started:
-reference: https://blog.miguelgrinberg.com/post/how-to-create-a-react--flask-project
-difference: I used pipenv for the virtual environment not the one he used, everything else are basically the same
-requirements:
-    install node.js, yarn
+0.1 reference: https://blog.miguelgrinberg.com/post/how-to-create-a-react--flask-project
+0.2 difference: I used pipenv for the virtual environment not the one he used, everything else are basically the same
+0.3 requirements:
+        install node.js, yarn
     
 1. base folder is 491A_Prototype/front_end/
 2.go to base folder
