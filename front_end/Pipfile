@@ -6,6 +6,13 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
+click = "==7.1.2"
+itsdangerous = "==1.1.0"
+python-dotenv = "==0.15.0"
+Flask = "==1.1.2"
+Jinja2 = "==2.11.2"
+MarkupSafe = "==1.1.1"
+Werkzeug = "==1.0.1"
 
 [requires]
 python_version = "3.7"
