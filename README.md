@@ -5,7 +5,7 @@
 1. reference: https://blog.miguelgrinberg.com/post/how-to-create-a-react--flask-project
 2. difference: I used pipenv for the virtual environment not the one he used, everything else are basically the same
 3. requirements:
-        install node.js, yarn
+        install node.js, yarn, python3.7.6, pipenv (pip3 install pipenv)
 
 
 ##to get started:
