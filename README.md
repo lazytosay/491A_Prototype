@@ -45,5 +45,5 @@ you can generate the requirement document others can install
 ##could not locate a Flask application
 1. check if the file ".flaskenv" exist in the base folder
 2. if ".flaskenv" does not exist, contact someone to config the project correctly, or download the latest changes
-3. if ".flaskenv" file exist, please install the "python-dotenv" under the 
+3. if ".flaskenv" file exist, please install using "pip install python-dotenv" under the 
 virtual environment
