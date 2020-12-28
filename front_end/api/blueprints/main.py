@@ -8,6 +8,7 @@ main_bp = Blueprint('main', __name__)
 
 @main_bp.route("/")
 def index():
+    #FIXME: for now
     return {'message': 'this is index page'}
 
 
