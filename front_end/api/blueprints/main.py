@@ -13,6 +13,6 @@ def index():
 
 
 @main_bp.route("/time")
-def getTime():
+def get_time():
     return {'time': time.time()}
 

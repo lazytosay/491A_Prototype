@@ -43,15 +43,13 @@ def test():
 #FIXME: not done, not return if access token is None
 @auth_bp.route('/gettracks')
 def get_tracks():
+    print("------reach get tracks")
     try:
         #check if token exist
         token_info = get_token_info()
 
         #get spotify object that we will make request of
         sp = spotipy.Spotify(auth=token_info['access_token'])
-
-        #print("----current users")
-        #print(sp.current_user()['display_name'])
 
         return str(sp.current_user_saved_tracks(limit=50, offset=0)['items'][0])
     except Exception as e:
@@ -66,15 +64,16 @@ def get_token_info():
     if not token_info:
         raise Exception("token not exist")
 
-    #check timestamp
     now = int(time.time())
 
-    #if close to expire, get a new one
+    #if token expired, raise excepiton
     is_expired = token_info['expires_at'] - now <= 0
 
     if(is_expired):
         raise Exception("access token expired")
+
     """
+    #FIXME: this is how you extend the access token if needed
     else:
         sp_oauth = create_spotify_oauth()
         #extend the lifetime of the access token with the help of refresh_token
@@ -89,23 +88,23 @@ TOKEN_INFO = 'TOKEN_INFO'
 # the page the spotify will redirect users back after user approve/deny the request
 @auth_bp.route('/redirect')
 def redirect_page():
+    print("--reach redirect page..")
     sp_oauth = create_spotify_oauth()
     session.clear()
 
     #get the query string pass along with redirct url
     code = request.args.get('code')
 
+    #if not code is given, then user did not approve the request
     if code is None:
         try:
             del session[TOKEN_INFO]
         finally:
             return 'Authorization failed'
 
-    #get token info with the code passsed back
-    token_info = sp_oauth.get_access_token(code)
+    #get token info with the code passsed back, disable checking cache
+    token_info = sp_oauth.get_access_token(code, check_cache=False)
 
-    print("---token info got: ")
-    print(token_info)
 
     #save token information into the session
     session[TOKEN_INFO] = token_info
@@ -125,8 +124,6 @@ def redirect_page():
 
         db_cursor.execute(sql_command_search)
         db_result = db_cursor.fetchall()
-        print("--first db result")
-        print(db_result)
 
 
         # if the user not in our database, create one with its spotify display name
@@ -140,20 +137,12 @@ def redirect_page():
             """ %(user_name)
             db_cursor.execute(sql_command_insert)
             db.commit()
-            print("--inserted")
 
             db_cursor.execute(sql_command_search)
             db_result = db_cursor.fetchall()
 
         cur_user_id = db_result[0][0]
         cur_user_name = db_result[0][1]
-        print("--cur user name: ")
-        print(cur_user_name)
-
-        print("trying to log in..")
-        #FIXME: looks like we need a user object
-        #login_user(cur_user_id)
-        #print("----user logged in")
 
         #log user in with the help of sessions
         session['logged_in'] = True
@@ -162,11 +151,12 @@ def redirect_page():
 
 
     except Exception as e:
-        print("error here..")
         print(e)
 
     #redirect user to the actual function they are requesting
+    #FIXME: for now
     return redirect(url_for('auth.get_tracks', _external=True))
+    #return redirect(url_for('main.get_time', _external=True))
 
 
 def create_spotify_oauth():
@@ -176,4 +166,3 @@ def create_spotify_oauth():
         redirect_uri=url_for('auth.redirect_page', _external=True),
         scope="user-library-read"
     )
-
