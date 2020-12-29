@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DashBoard Interface</title>
+</head>
+<body>
+    <h1> {{user_name}}'s Home Page</h1>
+
+    <ol>
+        <li>{{user_info['user_name'] }}</li>
+        <li>followers: {{user_info['num_followers'] }}</li>
+        <li>following: {{user_info['user_following_num'] }}</li>
+        <li>saved songs: {{user_info['user_saved_songs'] }}</li>
+        <li>public playlists: {{user_info['num_public_playlists'] }}</li>
+        <li>private playlists: {{user_info['num_private_playlists'] }}</li>
+        <li>listening from: {{user_info['country'] }}</li>
+    </ol>
+
+</body>
+</html>

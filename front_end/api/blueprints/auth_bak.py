@@ -5,28 +5,32 @@ auth_bp = Blueprint('auth', __name__)
 
 from flask import request, url_for, session, redirect
 import spotipy
+from spotipy.oauth2 import SpotifyOAuth
+import os
+import time
+#from flask_login import login_user, login_required, current_user, logout_user
 from front_end.api.decorators import login_required
 from front_end.api.extensions import db, db_cursor
-from front_end.api.utils import get_spotify_oauth, get_token_info, get_spotify_object
 
-@auth_bp.route('/auth/login')
+#FIXME: test
+@auth_bp.route('/login')
 def login():
+
     #set up the spotify authorization
-    sp_oauth = get_spotify_oauth()
+    sp_oauth = create_spotify_oauth()
 
     #make the authorization request and return the like user need to approve the request
     auth_url = sp_oauth.get_authorize_url()
     return redirect(auth_url)
 
 
-#FIXME: no idea how to revoke the access token, i will do it with login with the help of session then
-@auth_bp.route('/auth/logout')
-@login_required
+#FIXME: no idea how to revoke the access token, i will do it with login_manager then
+@auth_bp.route('/logout')
 def logout():
     session['logged_in'] = False
     return "logged out successfully"
 
-@auth_bp.route('/auth/accessdenied')
+@auth_bp.route('/accessdenied')
 def access_denied():
     return 'access denied'
 
@@ -38,7 +42,6 @@ def test():
 
 #FIXME: not done, not return if access token is None
 @auth_bp.route('/gettracks')
-@login_required
 def get_tracks():
     print("------reach get tracks")
     try:
@@ -46,7 +49,7 @@ def get_tracks():
         token_info = get_token_info()
 
         #get spotify object that we will make request of
-        sp = get_spotify_object()
+        sp = spotipy.Spotify(auth=token_info['access_token'])
 
         return str(sp.current_user_saved_tracks(limit=50, offset=0)['items'][0])
     except Exception as e:
@@ -56,14 +59,37 @@ def get_tracks():
 
 
 
+def get_token_info():
+    token_info = session.get(TOKEN_INFO, None)
+    if not token_info:
+        raise Exception("token not exist")
 
+    now = int(time.time())
+
+    #if token expired, raise excepiton
+    is_expired = token_info['expires_at'] - now <= 0
+
+    if(is_expired):
+        raise Exception("access token expired")
+
+    """
+    #FIXME: this is how you extend the access token if needed
+    else:
+        sp_oauth = create_spotify_oauth()
+        #extend the lifetime of the access token with the help of refresh_token
+        token_info = sp_oauth.refresh_access_token(token_info['refresh_token'])
+    """
+
+    return token_info
+
+TOKEN_INFO = 'TOKEN_INFO'
 
 
 # the page the spotify will redirect users back after user approve/deny the request
-@auth_bp.route('/auth/redirect')
+@auth_bp.route('/redirect')
 def redirect_page():
     print("--reach redirect page..")
-    sp_oauth = get_spotify_oauth()
+    sp_oauth = create_spotify_oauth()
     session.clear()
 
     #get the query string pass along with redirct url
@@ -72,7 +98,7 @@ def redirect_page():
     #if not code is given, then user did not approve the request
     if code is None:
         try:
-            del session["TOKEN_INFO"]
+            del session[TOKEN_INFO]
         finally:
             return 'Authorization failed'
 
@@ -81,7 +107,7 @@ def redirect_page():
 
 
     #save token information into the session
-    session["TOKEN_INFO"] = token_info
+    session[TOKEN_INFO] = token_info
 
     #try to log user in
     try:
@@ -129,7 +155,14 @@ def redirect_page():
 
     #redirect user to the actual function they are requesting
     #FIXME: for now
-    #return redirect(url_for('auth.get_tracks', _external=True))
-    return redirect(url_for('user.home', _external=True))
+    return redirect(url_for('auth.get_tracks', _external=True))
+    #return redirect(url_for('main.get_time', _external=True))
 
 
+def create_spotify_oauth():
+    return SpotifyOAuth(
+        client_id= os.getenv("CLIENT_ID"),
+        client_secret=os.getenv("CLIENT_SECRET"),
+        redirect_uri=url_for('auth.redirect_page', _external=True),
+        scope="user-library-read"
+    )

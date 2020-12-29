@@ -7,11 +7,15 @@ from front_end.api.blueprints.admin import admin_bp
 from front_end.api.blueprints.user import user_bp
 from front_end.api.blueprints.auth import auth_bp
 
-from front_end.api.extensions import login_manager
+#from front_end.api.extensions import login_manager
 import os
 
 def create_app(config_name=None):
-    app = Flask('api')
+
+    template_dir = os.path.abspath('./api/templates')
+
+    app = Flask('api', template_folder=template_dir)
+    #app = Flask('api')
 
     # for now
     app.secret_key = os.getenv('SECRET_KEY')
@@ -22,7 +26,6 @@ def create_app(config_name=None):
 
 
 
-    register_extensions(app)
 
     register_blueprints(app)
     return app
@@ -33,5 +36,3 @@ def register_blueprints(app):
     app.register_blueprint(auth_bp, prefix='/auth')
     app.register_blueprint(user_bp, prefix='/user')
 
-def register_extensions(app):
-    login_manager.init_app(app)
