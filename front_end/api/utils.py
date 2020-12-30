@@ -16,7 +16,9 @@ def get_spotify_oauth():
         scope="user-library-read, "
               "user-read-email, "
               "user-read-private,"
-              "playlist-read-private"
+              "playlist-read-private,"
+              "user-read-recently-played,"
+              "user-top-read"
         )
 
     return sp_oauth

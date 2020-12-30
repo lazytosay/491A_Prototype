@@ -7,7 +7,8 @@
 <body>
     <h1> {{user_name}}'s Home Page</h1>
 
-    <ol>
+    <h4>Simple User Profile</h4>
+    <ul>
         <li>{{user_info['user_name'] }}</li>
         <li>followers: {{user_info['num_followers'] }}</li>
         <li>following: {{user_info['user_following_num'] }}</li>
@@ -15,6 +16,20 @@
         <li>public playlists: {{user_info['num_public_playlists'] }}</li>
         <li>private playlists: {{user_info['num_private_playlists'] }}</li>
         <li>listening from: {{user_info['country'] }}</li>
+    </ul>
+
+    <h4>Top Artists</h4>
+    <ol>
+    {% for artist in user_info['top_artists'] %}
+        <li>{{artist}}</li>
+    {% endfor %}
+    </ol>
+
+    <h4>Top Albums</h4>
+    <ol>
+        {% for album in user_info['top_albums'] %}
+        <li>{{album}}</li>
+        {% endfor %}
     </ol>
 
 </body>
