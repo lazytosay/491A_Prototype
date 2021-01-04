@@ -21,16 +21,36 @@
     <h4>Top Artists</h4>
     <ol>
     {% for artist in user_info['top_artists'] %}
-        <li>{{artist}}</li>
+        <li><a href="{{url_for('user.artist_details', artist_id=artist['id']) }}">{{artist['name']}} </a></li>
     {% endfor %}
     </ol>
+
+
+
+    <h4>Top Tracks</h4>
+    <ol>
+        {% for track in user_info['top_tracks'] %}
+        <li>
+            <a href="{{url_for('user.track_details', track_id=track['id']) }}">{{track['name']}}</a>
+        </li>
+        {% endfor %}
+    </ol>
+
+
 
     <h4>Top Albums</h4>
     <ol>
         {% for album in user_info['top_albums'] %}
-        <li>{{album}}</li>
+        <li>
+            <a href="{{url_for('user.album_details', album_id=album['id']) }}">
+                {{album['name'] }}
+            </a>
+        </li>
         {% endfor %}
     </ol>
+
+    <iframe src="https://open.spotify.com"></iframe>
+    <iframe src="https://www.youtube.com"></iframe>
 
 </body>
 </html>

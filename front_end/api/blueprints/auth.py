@@ -7,7 +7,8 @@ from flask import request, url_for, session, redirect
 import spotipy
 from front_end.api.decorators import login_required
 from front_end.api.extensions import db, db_cursor
-from front_end.api.utils import get_spotify_oauth, get_token_info, get_spotify_object
+from front_end.api.utils import get_spotify_oauth, get_token_info, get_spotify_object, refresh_token_info
+from front_end.api.decorators import token_checked
 
 @auth_bp.route('/auth/login')
 def login():
@@ -79,9 +80,13 @@ def redirect_page():
     #get token info with the code passsed back, disable checking cache
     token_info = sp_oauth.get_access_token(code, check_cache=False)
 
-
     #save token information into the session
     session["TOKEN_INFO"] = token_info
+
+    #FIXME: refresh the token, I just changed the order of this line
+    refresh_token_info(token_info['refresh_token'])
+
+
 
     #try to log user in
     try:
